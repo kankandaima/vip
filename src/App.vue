@@ -6,7 +6,7 @@
         src="/videos/使用方法视频.mp4"
         controls
         preload="metadata"
-        poster="./src/jpg/nian.jpg"
+        poster="/src/jpg/nian.jpg"
       >
       </video>
     </div>
