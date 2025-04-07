@@ -49,7 +49,3 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-
-# Large files
-public/videos/
-*.mp4
