@@ -1,11 +1,11 @@
-from http.server import BaseHTTPRequestHandler
-from urllib.parse import parse_qs
+from cloudflare_workers import Worker
 import json
 
-def handle_request(event):
+def handle_request(request):
     # 获取查询参数
-    query_string = event.get('queryStringParameters', {}) or {}
-    site = query_string.get('site', [''])[0]
+    url = request.url
+    params = dict(url.searchParams)
+    site = params.get('site', '')
     
     sites = {
         'iqiyi': 'https://www.iqiyi.com',
@@ -15,58 +15,35 @@ def handle_request(event):
     
     if site in sites:
         url = sites[site]
-        return {
-            'statusCode': 200,
-            'headers': {
+        return Response(
+            json.dumps({'success': True, 'url': url}),
+            headers={
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type'
-            },
-            'body': json.dumps({'success': True, 'url': url})
-        }
+            }
+        )
     else:
-        return {
-            'statusCode': 400,
-            'headers': {
+        return Response(
+            json.dumps({'success': False, 'message': '未知网站'}),
+            status=400,
+            headers={
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type'
-            },
-            'body': json.dumps({'success': False, 'message': '未知网站'})
-        }
+            }
+        )
 
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        # 处理 CORS 预检请求
-        if self.path == '/api/open_site' and self.headers.get('Access-Control-Request-Method'):
-            self.send_response(200)
-            self.send_header('Access-Control-Allow-Origin', '*')
-            self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-            self.end_headers()
-            return
+worker = Worker()
 
-        # 处理实际请求
-        if self.path.startswith('/api/open_site'):
-            response = handle_request({
-                'queryStringParameters': parse_qs(self.path.split('?')[1]) if '?' in self.path else {}
-            })
-            
-            self.send_response(response['statusCode'])
-            for header, value in response['headers'].items():
-                self.send_header(header, value)
-            self.end_headers()
-            self.wfile.write(response['body'].encode())
-        else:
-            self.send_response(404)
-            self.end_headers()
-            self.wfile.write(b'Not Found')
-
-    def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers() 
+@worker.route('/api/open_site', methods=['GET', 'OPTIONS'])
+def open_site(request):
+    if request.method == 'OPTIONS':
+        return Response('', headers={
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        })
+    return handle_request(request) 

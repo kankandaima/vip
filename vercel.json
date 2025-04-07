@@ -1,13 +1,12 @@
 {
-  "version": 2,
   "builds": [
     {
       "src": "api/*.py",
-      "use": "@vercel/python"
+      "use": "@cloudflare/workers-python"
     },
     {
       "src": "package.json",
-      "use": "@vercel/static-build",
+      "use": "@cloudflare/static-build",
       "config": {
         "distDir": "dist"
       }
