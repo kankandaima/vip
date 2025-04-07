@@ -35,4 +35,5 @@ def parse_video():
     return jsonify({'success': True, 'parsed_url': parsed_url})
 
 if __name__ == '__main__':
+    # 开发环境使用
     app.run(debug=True, port=5000) 
