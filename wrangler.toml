@@ -1,4 +1,6 @@
 name = "vip-video-player"
+main = "api/open_site.py"
+compatibility_date = "2023-01-01"
 type = "webpack"
 account_id = ""  # 你的 Cloudflare 账户 ID
 workers_dev = true

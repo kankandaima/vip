@@ -1,7 +1,7 @@
-from cloudflare_workers import Worker
+from cloudflare_workers import Worker, Response
 import json
 
-def handle_request(request):
+async def handle_request(request):
     try:
         # 获取请求体
         body = await request.json()

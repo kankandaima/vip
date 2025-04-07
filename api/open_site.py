@@ -1,4 +1,4 @@
-from cloudflare_workers import Worker
+from cloudflare_workers import Worker, Response
 import json
 
 def handle_request(request):
