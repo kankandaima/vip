@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && copy _headers dist\\ && copy _redirects dist\\",
+    "build": "vite build && cp _headers _redirects dist/",
     "preview": "vite preview",
     "deploy": "wrangler deploy"
   },
