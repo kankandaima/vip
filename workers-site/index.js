@@ -8,6 +8,7 @@ import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
  *    than the default 404.html page.
  */
 const DEBUG = false
+const API_BASE_URL = 'http://localhost:5000'  // 修改为本地 Python 后端地址
 
 addEventListener('fetch', event => {
   try {
@@ -30,11 +31,29 @@ async function handleEvent(event) {
   try {
     // 处理 API 请求
     if (url.pathname.startsWith('/api/')) {
-      return await handleApiRequest(event)
+      // 创建新的请求，转发到 Vercel 后端
+      const apiUrl = new URL(url.pathname + url.search, API_BASE_URL)
+      const newRequest = new Request(apiUrl.toString(), {
+        method: event.request.method,
+        headers: event.request.headers,
+        body: event.request.body,
+        redirect: 'follow'
+      })
+      
+      return await fetch(newRequest)
     }
     
     // 处理静态资源
-    return await getAssetFromKV(event)
+    let response = await getAssetFromKV(event)
+    
+    // 如果资源不存在，返回 index.html
+    if (!response) {
+      response = await getAssetFromKV(event, {
+        mapRequestToAsset: req => new Request(`${new URL(req.url).origin}/index.html`, req),
+      })
+    }
+    
+    return response
   } catch (e) {
     // 如果资源不存在，返回 index.html 以支持单页应用路由
     if (e.status === 404) {

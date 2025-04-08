@@ -3,10 +3,10 @@
     <div class="video-container">
       <video 
         class="tutorial-video" 
-        src="/videos/使用方法视频.mp4"
+        :src="tutorialVideo"
         controls
         preload="metadata"
-        poster="/src/jpg/nian.jpg"
+        :poster="nianImage"
       >
       </video>
     </div>
@@ -84,6 +84,7 @@ import IqiyiContent from './components/爱奇艺.vue';
 import TencentContent from './components/腾讯视频.vue';
 import YoukuContent from './components/优酷.vue';
 import tutorialVideo from './jpg/使用方法视频.mp4';
+import nianImage from './jpg/nian.jpg';
 
 export default {
   name: 'App',
@@ -99,8 +100,9 @@ export default {
       toastMessage: '',
       toastType: 'info',
       currentSite: 'iqiyi',
-      apiBaseUrl: '/api',
-      tutorialVideo: tutorialVideo
+      apiBaseUrl: 'http://localhost:5000',
+      tutorialVideo,
+      nianImage
     };
   },
   methods: {
@@ -120,16 +122,9 @@ export default {
       }
       
       try {
-        const response = await axios.post(`${this.apiBaseUrl}/parse_video`, {
-          video_url: this.videoUrl
-        });
-        
-        if (response.data.success) {
-          window.open(response.data.parsed_url, '_blank');
-          this.showMessage({ type: 'success', text: '视频解析成功，正在打开...' });
-        } else {
-          this.showMessage({ type: 'error', text: response.data.message });
-        }
+        const parsed_url = 'https://jx.xmflv.cc/?url=' + encodeURIComponent(this.videoUrl);
+        window.open(parsed_url, '_blank');
+        this.showMessage({ type: 'success', text: '视频解析成功，正在打开...' });
       } catch (error) {
         console.error('解析视频失败:', error);
         this.showMessage({ type: 'error', text: '解析视频失败，请检查网络连接' });

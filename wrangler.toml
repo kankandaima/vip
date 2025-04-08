@@ -1,7 +1,7 @@
 name = "vip-video-player"
 main = "./workers-site/index.js"
 compatibility_date = "2024-04-08"
-compatibility_flags = ["python_workers"]
+account_id = "a44b12c63b3be31c1566b8da6b159544"
 
 [site]
 bucket = "./dist"
@@ -9,5 +9,6 @@ bucket = "./dist"
 [build]
 command = "npm run build"
 
-[env.production]
-workers_dev = true
+[[kv_namespaces]]
+binding = "ASSETS"
+id = "61147c96a1864b29ae12f59f10f8bca1"
