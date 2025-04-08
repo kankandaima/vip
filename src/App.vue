@@ -99,7 +99,7 @@ export default {
       toastMessage: '',
       toastType: 'info',
       currentSite: 'iqiyi',
-      apiBaseUrl: 'http://localhost:5000/api',
+      apiBaseUrl: '/api',
       tutorialVideo: tutorialVideo
     };
   },
